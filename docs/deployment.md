@@ -54,48 +54,7 @@ sudo rpm -U ./amazon-cloudwatch-agent.rpm
 
 ### Set IAM Role for Server
 
-Create the policy that allows the EC2 Instance to sent the logs to CloudWatch
-
-```bash
-cat > cloudwatch-logs-policy.json <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "logs:CreateLogGroup",
-        "logs:CreateLogStream",
-        "logs:PutLogEvents",
-        "logs:DescribeLogStreams"
-      ],
-      "Resource": "arn:aws:logs:*:*:*"
-    }
-  ]
-}
-EOF
-```
-
-Create trust policy so EC2 can assume the role
-
-```bash
-cat > ec2-trust-policy.json <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": {
-        "Service": "ec2.amazonaws.com"
-      },
-      "Action": "sts:AssumeRole"
-    }
-  ]
-}
-EOF
-```
- 
-Create the IAM role 
+Create the policies that allow the EC2 Instance to sent the logs and put metric data into CloudWatch: _cloudwatch-logs-policy.json_ and _cloudwatch-metrics-policy.json_. After that, create trust policy _ec2-trust-policy.json_ so EC2 can assume the role. Then, create the IAM role with the trust policy. 
 
 ```bash
 aws iam create-role \
@@ -111,7 +70,13 @@ POLICY_ARN=$(aws iam create-policy \
   --policy-document file://cloudwatch-logs-policy.json \
   --query 'Policy.Arn' \
   --output text)
+
+aws iam put-role-policy \
+  --role-name CloudWatchAgentRole \
+  --policy-name CloudWatchMetricsPolicy \
+  --policy-document file://cloudwatch-metrics-policy.json
 ``` 
+
 Attach role policy to EC2 instance role
 
 ```bash
@@ -119,7 +84,6 @@ aws iam attach-role-policy \
   --role-name CloudWatchAgentRole \
   --policy-arn $POLICY_ARN
 ```
-
 
 Create instance profile and attach role to the instance
 
@@ -152,6 +116,14 @@ sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
   -m ec2 \
   -s \
   -c file:/opt/aws/amazon-cloudwatch-agent/etc/config.json
+```
+
+Run the application: 
+
+```bash 
+cd ~/app
+nohup python3 server.py > app.log 2>&1 &
+disown
 ```
 
 ## Custom Metrics Instrumentation 

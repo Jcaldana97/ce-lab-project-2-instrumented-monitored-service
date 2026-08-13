@@ -58,3 +58,12 @@ aws logs get-log-events \
   --log-stream-name i-your-instance-id \
   --limit 10
   ```
+
+## Test SNS Topic 
+
+```bash
+aws sns publish \
+  --topic-arn $TOPIC_ARN \
+  --subject "Test Alert" \
+  --message "This is a test alert from CloudWatch"
+```
