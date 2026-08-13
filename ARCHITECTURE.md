@@ -1,6 +1,19 @@
 # Architecture 
 
-System architecture diagram
-Components and their purpose
-Data flow (logs, metrics, alerts)
-Technology choices
+## Architecture diagram
+
+![Architecture Diagram](docs/architecture/architecture-diagram.png)
+
+## Components and their purpose
+
+## Data flow 
+
+- **Logs**
+
+- **Metrics**
+
+- **Alerts**
+
+
+## Technology 
+
