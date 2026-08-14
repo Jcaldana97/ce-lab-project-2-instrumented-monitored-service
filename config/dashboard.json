@@ -19,7 +19,16 @@
             "properties": {
                 "title": "Current Request Rate",
                 "metrics": [
-                    [ "AWS/ApplicationELB", "RequestCount", "LoadBalancer", "app/logging-p2-alb/7c4aa27ebf3935b4", { "stat": "Sum", "period": 60 } ]
+                    [
+                        "AWS/ApplicationELB",
+                        "RequestCount",
+                        "LoadBalancer",
+                        "app/logging-p2-alb/7c4aa27ebf3935b4",
+                        {
+                            "stat": "Sum",
+                            "period": 60
+                        }
+                    ]
                 ],
                 "view": "singleValue",
                 "region": "us-east-1"
@@ -34,9 +43,33 @@
             "properties": {
                 "title": "Error Rate (%)",
                 "metrics": [
-                    [ "AWS/ApplicationELB", "HTTPCode_Target_5XX_Count", "LoadBalancer", "app/logging-p2-alb/7c4aa27ebf3935b4", { "id": "m1", "visible": false } ],
-                    [ ".", "RequestCount", "LoadBalancer", "app/logging-p2-alb/7c4aa27ebf3935b4", { "id": "m2", "visible": false } ],
-                    [ { "expression": "(m1/m2)*100", "label": "Error Rate %", "id": "e1" } ]
+                    [
+                        "AWS/ApplicationELB",
+                        "HTTPCode_Target_5XX_Count",
+                        "LoadBalancer",
+                        "app/logging-p2-alb/7c4aa27ebf3935b4",
+                        {
+                            "id": "m1",
+                            "visible": false
+                        }
+                    ],
+                    [
+                        ".",
+                        "RequestCount",
+                        "LoadBalancer",
+                        "app/logging-p2-alb/7c4aa27ebf3935b4",
+                        {
+                            "id": "m2",
+                            "visible": false
+                        }
+                    ],
+                    [
+                        {
+                            "expression": "(m1/m2)*100",
+                            "label": "Error Rate %",
+                            "id": "e1"
+                        }
+                    ]
                 ],
                 "view": "singleValue",
                 "region": "us-east-1",
@@ -52,7 +85,15 @@
             "properties": {
                 "title": "P95 Latency (ms)",
                 "metrics": [
-                    [ "AWS/ApplicationELB", "TargetResponseTime", "LoadBalancer", "app/logging-p2-alb/7c4aa27ebf3935b4", { "stat": "p95" } ]
+                    [
+                        "AWS/ApplicationELB",
+                        "TargetResponseTime",
+                        "LoadBalancer",
+                        "app/logging-p2-alb/7c4aa27ebf3935b4",
+                        {
+                            "stat": "p95"
+                        }
+                    ]
                 ],
                 "view": "singleValue",
                 "region": "us-east-1",
@@ -69,7 +110,17 @@
             "properties": {
                 "title": "Healthy Targets",
                 "metrics": [
-                    [ "AWS/ApplicationELB", "HealthyHostCount", "LoadBalancer", "app/logging-p2-alb/7c4aa27ebf3935b4", "TargetGroup", "targetgroup/logging-p2-tg/66c7e78b44e6e9fa", { "stat": "Average" } ]
+                    [
+                        "AWS/ApplicationELB",
+                        "HealthyHostCount",
+                        "LoadBalancer",
+                        "app/logging-p2-alb/7c4aa27ebf3935b4",
+                        "TargetGroup",
+                        "targetgroup/logging-p2-tg/66c7e78b44e6e9fa",
+                        {
+                            "stat": "Average"
+                        }
+                    ]
                 ],
                 "view": "singleValue",
                 "region": "us-east-1",
@@ -95,7 +146,16 @@
             "properties": {
                 "title": "Traffic - Request Rate",
                 "metrics": [
-                    [ "AWS/ApplicationELB", "RequestCount", "LoadBalancer", "app/logging-p2-alb/7c4aa27ebf3935b4", { "stat": "Sum", "label": "Requests/min" } ]
+                    [
+                        "AWS/ApplicationELB",
+                        "RequestCount",
+                        "LoadBalancer",
+                        "app/logging-p2-alb/7c4aa27ebf3935b4",
+                        {
+                            "stat": "Sum",
+                            "label": "Requests/min"
+                        }
+                    ]
                 ],
                 "view": "timeSeries",
                 "region": "us-east-1",
@@ -115,16 +175,44 @@
             "width": 12,
             "height": 6,
             "properties": {
-                "title": "Errors - HTTP Status Codes",
                 "metrics": [
-                    [ "AWS/ApplicationELB", "HTTPCode_Target_5XX_Count", "LoadBalancer", "app/logging-p2-alb/7c4aa27ebf3935b4", { "stat": "Sum", "color": "#d13212" } ],
-                    [ ".", "HTTPCode_Target_4XX_Count", "LoadBalancer", "app/logging-p2-alb/7c4aa27ebf3935b4", { "stat": "Sum", "color": "#ff7f0e" } ],
-                    [ ".", "HTTPCode_Target_2XX_Count", "LoadBalancer", "app/logging-p2-alb/7c4aa27ebf3935b4", { "stat": "Sum", "color": "#2ca02c" } ]
+                    [
+                        "AWS/ApplicationELB",
+                        "HTTPCode_Target_5XX_Count",
+                        "LoadBalancer",
+                        "app/logging-p2-alb/7c4aa27ebf3935b4",
+                        {
+                            "color": "#d13212",
+                            "region": "us-east-1"
+                        }
+                    ],
+                    [
+                        ".",
+                        "HTTPCode_Target_4XX_Count",
+                        ".",
+                        ".",
+                        {
+                            "color": "#ff7f0e",
+                            "region": "us-east-1"
+                        }
+                    ],
+                    [
+                        ".",
+                        "HTTPCode_Target_2XX_Count",
+                        ".",
+                        ".",
+                        {
+                            "color": "#2ca02c",
+                            "region": "us-east-1"
+                        }
+                    ]
                 ],
+                "title": "Errors - HTTP Status Codes",
                 "view": "timeSeries",
                 "stacked": true,
                 "region": "us-east-1",
-                "period": 300
+                "period": 60,
+                "stat": "Sum"
             }
         },
         {
@@ -134,15 +222,38 @@
             "width": 12,
             "height": 6,
             "properties": {
-                "title": "Latency - Response Time Percentiles",
                 "metrics": [
-                    [ "AWS/ApplicationELB", "TargetResponseTime", "LoadBalancer", "app/logging-p2-alb/7c4aa27ebf3935b4", { "stat": "p50", "label": "P50" } ],
-                    [ "AWS/ApplicationELB", "TargetResponseTime", "LoadBalancer", "app/logging-p2-alb/7c4aa27ebf3935b4", { "stat": "p95", "label": "P95" } ],
-                    [ "AWS/ApplicationELB", "TargetResponseTime", "LoadBalancer", "app/logging-p2-alb/7c4aa27ebf3935b4", { "stat": "p99", "label": "P99" } ]
+                    [
+                        "AWS/ApplicationELB",
+                        "TargetResponseTime",
+                        "LoadBalancer",
+                        "app/logging-p2-alb/7c4aa27ebf3935b4",
+                        {
+                            "stat": "p50",
+                            "label": "P50",
+                            "region": "us-east-1"
+                        }
+                    ],
+                    [
+                        "...",
+                        {
+                            "stat": "p95",
+                            "label": "P95",
+                            "region": "us-east-1"
+                        }
+                    ],
+                    [
+                        "...",
+                        {
+                            "label": "P99",
+                            "region": "us-east-1"
+                        }
+                    ]
                 ],
+                "title": "Latency - Response Time Percentiles",
                 "view": "timeSeries",
                 "region": "us-east-1",
-                "period": 300,
+                "period": 60,
                 "yAxis": {
                     "left": {
                         "min": 0,
@@ -164,7 +275,8 @@
                             "color": "#d13212"
                         }
                     ]
-                }
+                },
+                "stat": "p99"
             }
         },
         {
@@ -176,8 +288,30 @@
             "properties": {
                 "title": "Saturation - Target Health",
                 "metrics": [
-                    [ "AWS/ApplicationELB", "HealthyHostCount", "LoadBalancer", "app/logging-p2-alb/7c4aa27ebf3935b4", "TargetGroup", "targetgroup/logging-p2-tg/66c7e78b44e6e9fa", { "stat": "Average", "color": "#2ca02c" } ],
-                    [ ".", "UnHealthyHostCount", "LoadBalancer", "app/logging-p2-alb/7c4aa27ebf3935b4", "TargetGroup", "targetgroup/logging-p2-tg/66c7e78b44e6e9fa", { "stat": "Average", "color": "#d13212" } ]
+                    [
+                        "AWS/ApplicationELB",
+                        "HealthyHostCount",
+                        "LoadBalancer",
+                        "app/logging-p2-alb/7c4aa27ebf3935b4",
+                        "TargetGroup",
+                        "targetgroup/logging-p2-tg/66c7e78b44e6e9fa",
+                        {
+                            "stat": "Average",
+                            "color": "#2ca02c"
+                        }
+                    ],
+                    [
+                        ".",
+                        "UnHealthyHostCount",
+                        "LoadBalancer",
+                        "app/logging-p2-alb/7c4aa27ebf3935b4",
+                        "TargetGroup",
+                        "targetgroup/logging-p2-tg/66c7e78b44e6e9fa",
+                        {
+                            "stat": "Average",
+                            "color": "#d13212"
+                        }
+                    ]
                 ],
                 "view": "timeSeries",
                 "region": "us-east-1",
@@ -203,7 +337,15 @@
             "properties": {
                 "title": "CPU Utilization",
                 "metrics": [
-                    [ "AWS/EC2", "CPUUtilization", "InstanceId", "i-034a75e71526ec100", { "stat": "Average" } ]
+                    [
+                        "AWS/EC2",
+                        "CPUUtilization",
+                        "InstanceId",
+                        "i-034a75e71526ec100",
+                        {
+                            "stat": "Average"
+                        }
+                    ]
                 ],
                 "view": "timeSeries",
                 "region": "us-east-1",
@@ -218,7 +360,7 @@
                 "annotations": {
                     "horizontal": [
                         {
-                            "value": 80,
+                            "value": 70,
                             "label": "Warning",
                             "fill": "above",
                             "color": "#ff7f0e"
@@ -236,7 +378,15 @@
             "properties": {
                 "title": "Memory Utilization",
                 "metrics": [
-                    [ "CWAgent", "mem_used_percent", "InstanceId", "i-034a75e71526ec100", { "stat": "Average" } ]
+                    [
+                        "CWAgent",
+                        "mem_used_percent",
+                        "InstanceId",
+                        "i-034a75e71526ec100",
+                        {
+                            "stat": "Average"
+                        }
+                    ]
                 ],
                 "view": "timeSeries",
                 "region": "us-east-1",
@@ -258,8 +408,26 @@
             "properties": {
                 "title": "Network In/Out",
                 "metrics": [
-                    [ "AWS/EC2", "NetworkIn", "InstanceId", "i-034a75e71526ec100", { "stat": "Sum", "label": "Network In" } ],
-                    [ ".", "NetworkOut", "InstanceId", "i-034a75e71526ec100", { "stat": "Sum", "label": "Network Out" } ]
+                    [
+                        "AWS/EC2",
+                        "NetworkIn",
+                        "InstanceId",
+                        "i-034a75e71526ec100",
+                        {
+                            "stat": "Sum",
+                            "label": "Network In"
+                        }
+                    ],
+                    [
+                        ".",
+                        "NetworkOut",
+                        "InstanceId",
+                        "i-034a75e71526ec100",
+                        {
+                            "stat": "Sum",
+                            "label": "Network Out"
+                        }
+                    ]
                 ],
                 "view": "timeSeries",
                 "region": "us-east-1",
@@ -275,7 +443,21 @@
             "properties": {
                 "title": "Disk Usage",
                 "metrics": [
-                    [ "CWAgent", "disk_used_percent", "InstanceId", "i-034a75e71526ec100", "path", "/", "device", "nvme0n1p1", "fstype", "xfs", { "stat": "Average" } ]
+                    [
+                        "CWAgent",
+                        "disk_used_percent",
+                        "InstanceId",
+                        "i-034a75e71526ec100",
+                        "path",
+                        "/",
+                        "device",
+                        "nvme0n1p1",
+                        "fstype",
+                        "xfs",
+                        {
+                            "stat": "Average"
+                        }
+                    ]
                 ],
                 "view": "timeSeries",
                 "region": "us-east-1",
@@ -299,16 +481,60 @@
             "width": 24,
             "height": 6,
             "properties": {
-                "title": "Latency vs Request Rate vs Error Rate vs CPU",
                 "metrics": [
-                    [ "AWS/ApplicationELB", "TargetResponseTime", "LoadBalancer", "app/logging-p2-alb/7c4aa27ebf3935b4", { "stat": "p95", "yAxis": "left", "label": "Latency P95 (ms)" } ],
-                    [ "AWS/ApplicationELB", "RequestCount", "LoadBalancer", "app/logging-p2-alb/7c4aa27ebf3935b4", { "stat": "Sum", "yAxis": "right", "label": "Request Rate" } ],
-                    [ "AWS/ApplicationELB", "HTTPCode_Target_5XX_Count", "LoadBalancer", "app/logging-p2-alb/7c4aa27ebf3935b4", { "stat": "Sum", "yAxis": "right", "label": "5XX Errors", "color": "#d13212" } ],
-                    [ "AWS/EC2", "CPUUtilization", "InstanceId", "i-034a75e71526ec100", { "stat": "Average", "yAxis": "right", "label": "CPU %" } ]
+                    [
+                        "AWS/ApplicationELB",
+                        "TargetResponseTime",
+                        "LoadBalancer",
+                        "app/logging-p2-alb/7c4aa27ebf3935b4",
+                        {
+                            "stat": "p95",
+                            "yAxis": "left",
+                            "label": "Latency P95 (ms)",
+                            "region": "us-east-1"
+                        }
+                    ],
+                    [
+                        ".",
+                        "RequestCount",
+                        ".",
+                        ".",
+                        {
+                            "yAxis": "right",
+                            "label": "Request Rate",
+                            "region": "us-east-1"
+                        }
+                    ],
+                    [
+                        ".",
+                        "HTTPCode_Target_5XX_Count",
+                        ".",
+                        ".",
+                        {
+                            "yAxis": "right",
+                            "label": "5XX Errors",
+                            "color": "#d13212",
+                            "region": "us-east-1"
+                        }
+                    ],
+                    [
+                        "AWS/EC2",
+                        "CPUUtilization",
+                        "InstanceId",
+                        "i-034a75e71526ec100",
+                        {
+                            "stat": "Average",
+                            "yAxis": "right",
+                            "label": "CPU %",
+                            "region": "us-east-1"
+                        }
+                    ]
                 ],
+                "title": "Latency vs Request Rate vs Error Rate vs CPU",
                 "view": "timeSeries",
                 "region": "us-east-1",
-                "period": 300
+                "period": 60,
+                "stat": "Sum"
             }
         },
         {
@@ -329,7 +555,13 @@
             "height": 4,
             "properties": {
                 "metrics": [
-                    [ "OrderService", "TotalCarts", { "region": "us-east-1" } ]
+                    [
+                        "OrderService",
+                        "TotalCarts",
+                        {
+                            "region": "us-east-1"
+                        }
+                    ]
                 ],
                 "sparkline": true,
                 "view": "singleValue",
@@ -347,7 +579,13 @@
             "height": 4,
             "properties": {
                 "metrics": [
-                    [ "OrderService", "CompletedCarts", { "region": "us-east-1" } ]
+                    [
+                        "OrderService",
+                        "CompletedCarts",
+                        {
+                            "region": "us-east-1"
+                        }
+                    ]
                 ],
                 "sparkline": true,
                 "view": "singleValue",
@@ -365,7 +603,13 @@
             "height": 4,
             "properties": {
                 "metrics": [
-                    [ "OrderService", "AbandonedCarts", { "region": "us-east-1" } ]
+                    [
+                        "OrderService",
+                        "AbandonedCarts",
+                        {
+                            "region": "us-east-1"
+                        }
+                    ]
                 ],
                 "sparkline": true,
                 "view": "singleValue",
@@ -383,7 +627,13 @@
             "height": 8,
             "properties": {
                 "metrics": [
-                    [ "OrderService", "CartAbandonmentRate", { "region": "us-east-1" } ]
+                    [
+                        "OrderService",
+                        "CartAbandonmentRate",
+                        {
+                            "region": "us-east-1"
+                        }
+                    ]
                 ],
                 "view": "timeSeries",
                 "stacked": false,

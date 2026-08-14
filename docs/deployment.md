@@ -122,8 +122,7 @@ Run the application:
 
 ```bash 
 cd ~/app
-nohup python3 server.py > app.log 2>&1 &
-disown
+nohup python3 server.py > app.log 2>&1 & disown
 ```
 
 ## Custom Metrics Instrumentation 

@@ -101,19 +101,6 @@ aws logs put-metric-filter \
     metricName=CompletedCarts,metricNamespace=OrderService,metricValue='$.completed_carts',unit=Count
 ```
 
-### Active Carts
-
-This metric extracts the number of active carts in the service. 
-
-```bash
-aws logs put-metric-filter \
-  --log-group-name /aws/application/api \
-  --filter-name "CartActiveCarts" \
-  --filter-pattern '{ $.metric_name = "CartAbandonmentRate" && $.active_carts = * }' \
-  --metric-transformations \
-    metricName=ActiveCarts,metricNamespace=OrderService,metricValue='$.active_carts',unit=Count
-```
-
 ### Cart Abandonment Rate
 
 This metrics extracts the rate of cart abandonment already calculated in the application. 

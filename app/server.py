@@ -422,6 +422,29 @@ def error():
         "status": "error"
     }, 500
 
+# =========================================================
+# Simulate slow requests
+# =========================================================
+
+@app.route("/slow")
+def slow():
+
+    delay = float(
+        request.args.get("delay", "1")
+    )
+
+    logger.info(
+        "slow_request",
+        delay=delay
+    )
+
+    time.sleep(delay)
+
+    return {
+        "status": "ok",
+        "delay": delay
+    }
+
 
 # =========================================================
 # Start application
