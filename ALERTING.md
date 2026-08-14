@@ -155,18 +155,7 @@ aws cloudwatch put-metric-alarm \
 
 ### Alarm 4: Application Error Rate Alarm 
 
-This metric filters the log lines and turns them into a numeric metric: every line in /aws/application/api matching $.level = "error" publishes a 1 to Application/ErrorCount, which the alarm then sums. First, create metric filter from logs
-
-```bash
-aws logs put-metric-filter \
-  --log-group-name /aws/application/api \
-  --filter-name ErrorCount \
-  --filter-pattern '{ $.level = "error" }' \
-  --metric-transformations \
-    metricName=ErrorCount,metricNamespace=Application,metricValue=1
-```
-
-Then, create the alarm with the following parameters: 
+Create the alarm with the following parameters: 
 
 - Period: 300 seconds (5 minutes)
 - Evaluation periods: 1
@@ -188,6 +177,26 @@ aws cloudwatch put-metric-alarm \
   --alarm-actions $TOPIC_ARN \
   --treat-missing-data notBreaching
 ```
+
+## Alarm 5: Application Load Balancer Response Time Alert
+
+This alarm is triggered when the Load Balancer response exceeds 500 ms.
+
+```bash
+aws cloudwatch put-metric-alarm \
+  --alarm-name HighResponseTime \
+  --alarm-description "Alert when P95 latency exceeds 500ms" \
+  --metric-name TargetResponseTime \
+  --namespace AWS/ApplicationELB \
+  --extended-statistic p95 \
+  --period 300 \
+  --threshold 0.5 \
+  --comparison-operator GreaterThanThreshold \
+  --evaluation-periods 2 \
+  --dimensions Name=LoadBalancer,Value=$LB_DIMENSION \
+  --alarm-actions $TOPIC_ARN
+```
+
 
 ## SNS topic configuration
 

@@ -7,7 +7,7 @@
 Launch an EC2 Instance where the application will reside. Access to the EC2 Instance via SSH to install the application. 
 
 ```bash
-ssh -i ~/bootcamp-week2-key.pem  ec2-user@EC2_PUBLIC_IP
+ssh -i ~/bootcamp-week2-key.pem  ec2-user@75.101.222.78
 ```
 
 Create the app folder in the instance where the application will be. 

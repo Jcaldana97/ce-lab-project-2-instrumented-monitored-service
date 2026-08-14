@@ -40,17 +40,41 @@ def health():
 def create_order():
     correlation_id = str(uuid.uuid4())
     data = request.get_json()
+
+    order_id = f"ord-{uuid.uuid4().hex[:8]}"
     
     logger.info(
         "order_created",
         correlation_id=correlation_id,
-        order_id=f"ord-{uuid.uuid4().hex[:8]}",
+        order_id=order_id,
+        cart_id=data.get('cart_id'),
         amount=data.get('amount', 0),
         items=data.get('items', 0),
         user_id=data.get('user_id')
     )
     
-    return {"status": "created", "correlation_id": correlation_id}
+    return {"status": "created", "order_id": order_id, "correlation_id": correlation_id}
+
+@app.route('/cart', methods=['POST'])
+def create_cart():
+    correlation_id = str(uuid.uuid4())
+    data = request.get_json()
+
+    cart_id = f"cart-{uuid.uuid4().hex[:8]}"
+
+    logger.info(
+        "cart_created",
+        correlation_id=correlation_id,
+        cart_id=cart_id,
+        user_id=data.get('user_id'),
+        items=data.get('items', 0)
+    )
+
+    return {
+        "status": "created",
+        "cart_id": cart_id,
+        "correlation_id": correlation_id
+    }
  
 @app.route('/error')
 def error():

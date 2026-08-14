@@ -1,7 +1,52 @@
 # Instrumentation 
 
-Logging strategy
-Custom metrics documentation
+## Logging strategy
+
+## Custom metrics
+
+### Memory Utilization
+
+To get the memory utilization, a metric filter is created to count the matching lines in the log group. This metric filter is defined in the file _cwagent-metrics.json_. For this metric, the measurements used are collected with the key *mem_used_percent*. After the json file is added to the server, the metrics are appended using the following command: 
+
+```bash
+sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
+  -a append-config -m ec2 -s \
+  -c file:/tmp/cwagent-metrics.json
+```
+
+### Disk Space 
+
+Similarly to the memory utilization, the disk space used is extracted from the logs via CW Agent. The mesurements are collected and stored with the key *user_percent*. This key encapsulates some other measurements; to access to the disk measurements, the key *disk_user_percent* is used in the dashboard or alerts. 
+
+### Application Error Rate
+
+This metric filters the log lines and turns them into a numeric metric: every line in /aws/application/api matching $.level = "error" publishes a 1 to Application/ErrorCount, which the alarm then sums.
+
+```bash
+aws logs put-metric-filter \
+  --log-group-name /aws/application/api \
+  --filter-name ErrorCount \
+  --filter-pattern '{ $.level = "error" }' \
+  --metric-transformations \
+    metricName=ErrorCount,metricNamespace=Application,metricValue=1
+```
+
+### Order Rate
+
+This metric filters the log lines and turns them into a numeric metric: every line in /aws/application/api matching $.event = "order_created" publishes a 1 to Application/OrderCount, which will be displayed in the dashboard. 
+
+```bash
+aws logs put-metric-filter \
+  --log-group-name /aws/application/api \
+  --filter-name OrderCount \
+  --filter-pattern '{ $.event = "order_created" }' \
+  --metric-transformations \
+    metricName=OrderCount,metricNamespace=Application,metricValue=1
+```
+
+
 Why each metric matters
+
 Example log entries
-Correlation ID implementation
+
+## Correlation ID implementation

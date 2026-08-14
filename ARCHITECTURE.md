@@ -6,6 +6,15 @@
 
 ## Components and their purpose
 
+### Web Server
+
+### CloudWatch Alerts
+
+### CloudWatch Dashboard
+
+### Application Load Balancer 
+
+
 ## Data flow 
 
 - **Logs**
