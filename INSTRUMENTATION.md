@@ -2,7 +2,7 @@
 
 ## Logging strategy
 
-## Custom metrics
+## Custom metrics - Technical 
 
 ### Memory Utilization
 
@@ -44,9 +44,87 @@ aws logs put-metric-filter \
     metricName=OrderCount,metricNamespace=Application,metricValue=1
 ```
 
+## Custom metrics - Bussiness
 
-Why each metric matters
+The server was extended for the user to create carts for their purchases. The interaction of the user with the application is logged, the information may look as follows: 
 
-Example log entries
+```bash
+{
+    "event": "cart_abandonment_metric",
+    "metric_name": "CartAbandonmentRate",
+    "metric_value": 40.0,
+    "total_carts": 10,
+    "abandoned_carts": 4,
+    "completed_carts": 6,
+    "active_carts": 0
+}
+```
+
+This information helps to understand the user experience in terms of bussiness and detect possible pitfalls for them with the application. 
+
+### Total Carts
+
+This metric extracts the total amount of carts that have been created. 
+
+```bash
+aws logs put-metric-filter \
+  --log-group-name /aws/application/api \
+  --filter-name "CartTotalCarts" \
+  --filter-pattern '{ $.metric_name = "CartAbandonmentRate" && $.total_carts = * }' \
+  --metric-transformations \
+    metricName=TotalCarts,metricNamespace=OrderService,metricValue='$.total_carts',unit=Count
+```
+
+### Abandoned Carts
+
+This metrics extracts the number of abandoned carts. 
+
+```bash 
+aws logs put-metric-filter \
+  --log-group-name /aws/application/api \
+  --filter-name "CartAbandonedCarts" \
+  --filter-pattern '{ $.metric_name = "CartAbandonmentRate" && $.abandoned_carts = * }' \
+  --metric-transformations \
+    metricName=AbandonedCarts,metricNamespace=OrderService,metricValue='$.abandoned_carts',unit=Count
+```
+
+### Completed Carts
+
+This metric extracts the number of completed carts. 
+
+```bash
+aws logs put-metric-filter \
+  --log-group-name /aws/application/api \
+  --filter-name "CartCompletedCarts" \
+  --filter-pattern '{ $.metric_name = "CartAbandonmentRate" && $.completed_carts = * }' \
+  --metric-transformations \
+    metricName=CompletedCarts,metricNamespace=OrderService,metricValue='$.completed_carts',unit=Count
+```
+
+### Active Carts
+
+This metric extracts the number of active carts in the service. 
+
+```bash
+aws logs put-metric-filter \
+  --log-group-name /aws/application/api \
+  --filter-name "CartActiveCarts" \
+  --filter-pattern '{ $.metric_name = "CartAbandonmentRate" && $.active_carts = * }' \
+  --metric-transformations \
+    metricName=ActiveCarts,metricNamespace=OrderService,metricValue='$.active_carts',unit=Count
+```
+
+### Cart Abandonment Rate
+
+This metrics extracts the rate of cart abandonment already calculated in the application. 
+
+```bash
+aws logs put-metric-filter \
+  --log-group-name /aws/application/api \
+  --filter-name "CartAbandonmentRate" \
+  --filter-pattern '{ $.metric_name = "CartAbandonmentRate" && $.abandonment_rate = * }' \
+  --metric-transformations \
+    metricName=CartAbandonmentRate,metricNamespace=OrderService,metricValue='$.abandonment_rate',unit=Percent
+```
 
 ## Correlation ID implementation

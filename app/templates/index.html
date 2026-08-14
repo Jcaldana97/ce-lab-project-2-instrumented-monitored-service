@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Order Service</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            color: #222;
+        }
+
+        header {
+            background: #1f2937;
+            color: white;
+            padding: 25px;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        header p {
+            margin-bottom: 0;
+            color: #d1d5db;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 22px;
+            box-shadow:
+                0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .card h2 {
+            margin-top: 0;
+        }
+
+        label {
+            display: block;
+            margin-top: 12px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 5px;
+            background: #2563eb;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        button.danger {
+            background: #dc2626;
+        }
+
+        .result {
+            margin-top: 15px;
+            padding: 12px;
+            background: #f3f4f6;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            word-break: break-word;
+            font-family: monospace;
+            font-size: 13px;
+        }
+
+        .metric {
+            font-size: 30px;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        .metric-info {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #6b7280;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <h1>Order Service</h1>
+
+    <p>
+        Customer interface for carts, orders and monitoring
+    </p>
+
+</header>
+
+
+<div class="container">
+
+
+    <div class="grid">
+
+
+        <!-- CREATE CART -->
+
+        <div class="card">
+
+            <h2>🛒 Create Cart</h2>
+
+            <label>User ID</label>
+
+            <input
+                id="userId"
+                type="text"
+                value="user-demo"
+            >
+
+            <label>Number of Items</label>
+
+            <input
+                id="items"
+                type="number"
+                value="2"
+                min="1"
+            >
+
+            <button onclick="createCart()">
+                Create Cart
+            </button>
+
+            <div id="cartResult"
+                 class="result">
+                No cart created yet.
+            </div>
+
+        </div>
+
+
+        <!-- COMPLETE ORDER -->
+
+        <div class="card">
+
+            <h2>💳 Complete Order</h2>
+
+            <label>Cart ID</label>
+
+            <input
+                id="cartId"
+                type="text"
+                placeholder="cart-xxxxxxxx"
+            >
+
+            <label>Amount</label>
+
+            <input
+                id="amount"
+                type="number"
+                value="49.99"
+                step="0.01"
+            >
+
+            <button onclick="createOrder()">
+                Complete Order
+            </button>
+
+            <div id="orderResult"
+                 class="result">
+                No order created yet.
+            </div>
+
+        </div>
+
+
+        <!-- CART MONITORING -->
+
+        <div class="card">
+
+            <h2>📊 Cart Monitoring</h2>
+
+            <p>
+                Cart abandonment timeout:
+                <strong>60 seconds</strong>
+            </p>
+
+            <p class="metric-info">
+                Monitoring automatically every
+                30 seconds.
+            </p>
+
+            <div id="abandonmentResult"
+                 class="result">
+                Waiting for first metric update...
+            </div>
+
+        </div>
+
+
+        <!-- HEALTH -->
+
+        <div class="card">
+
+            <h2>❤️ Service Health</h2>
+
+            <button onclick="checkHealth()">
+                Check Health
+            </button>
+
+            <div id="healthResult"
+                 class="result">
+                No health check performed.
+            </div>
+
+        </div>
+
+
+        <!-- ERROR TEST -->
+
+        <div class="card">
+
+            <h2>⚠️ Error Test</h2>
+
+            <p>
+                Generates a simulated HTTP 500 error.
+            </p>
+
+            <button
+                class="danger"
+                onclick="testError()">
+                Generate Error
+            </button>
+
+            <div id="errorResult"
+                 class="result">
+                No error generated.
+            </div>
+
+        </div>
+
+
+        <!-- METRIC RESULT -->
+
+        <div class="card">
+
+            <h2>📈 Cart Abandonment</h2>
+
+            <div id="metricValue"
+                 class="metric">
+                --
+            </div>
+
+            <p>
+                CartAbandonmentRate
+            </p>
+
+            <p class="metric-info">
+                Automatically refreshed every 30 seconds.
+            </p>
+
+            <div id="abandonmentResult"
+                 class="result">
+                Waiting for first metric update...
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<footer>
+
+    Order Service Demo &mdash; Flask + EC2
+
+</footer>
+
+
+<script>
+
+
+async function createCart() {
+
+    const userId =
+        document.getElementById("userId").value;
+
+    const items =
+        parseInt(
+            document.getElementById("items").value
+        );
+
+    const response = await fetch(
+        "/cart",
+        {
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                user_id: userId,
+                items: items
+            })
+        }
+    );
+
+    const data = await response.json();
+
+    document.getElementById(
+        "cartResult"
+    ).textContent =
+        JSON.stringify(data, null, 2);
+
+    if (data.cart_id) {
+
+        document.getElementById(
+            "cartId"
+        ).value = data.cart_id;
+    }
+}
+
+
+async function createOrder() {
+
+    const cartId =
+        document.getElementById("cartId").value;
+
+    const userId =
+        document.getElementById("userId").value;
+
+    const amount =
+        parseFloat(
+            document.getElementById("amount").value
+        );
+
+    const items =
+        parseInt(
+            document.getElementById("items").value
+        );
+
+    const response = await fetch(
+        "/order",
+        {
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                cart_id: cartId,
+                user_id: userId,
+                amount: amount,
+                items: items
+            })
+        }
+    );
+
+    const data = await response.json();
+
+    document.getElementById(
+        "orderResult"
+    ).textContent =
+        JSON.stringify(data, null, 2);
+}
+
+
+async function updateCartMonitoring() {
+
+    try {
+
+        const response = await fetch(
+            "/metrics/cart-abandonment"
+        );
+
+        const data = await response.json();
+
+        document.getElementById(
+            "abandonmentResult"
+        ).textContent =
+            JSON.stringify(data, null, 2);
+
+        document.getElementById(
+            "metricValue"
+        ).textContent =
+            data.abandonment_rate_percent + "%";
+
+    } catch (error) {
+
+        document.getElementById(
+            "abandonmentResult"
+        ).textContent =
+            "Unable to retrieve cart metrics.";
+
+    }
+}
+
+
+async function checkHealth() {
+
+    const response = await fetch(
+        "/health"
+    );
+
+    const data = await response.json();
+
+    document.getElementById(
+        "healthResult"
+    ).textContent =
+        JSON.stringify(data, null, 2);
+}
+
+
+async function testError() {
+
+    const response = await fetch(
+        "/error"
+    );
+
+    const data = await response.json();
+
+    document.getElementById(
+        "errorResult"
+    ).textContent =
+        "HTTP " +
+        response.status +
+        "\n" +
+        JSON.stringify(data, null, 2);
+}
+
+
+// =========================================================
+// Automatically refresh cart monitoring every 30 seconds
+// =========================================================
+
+updateCartMonitoring();
+
+setInterval(
+    updateCartMonitoring,
+    30000
+);
+
+
+</script>
+
+
+</body>
+
+</html>

@@ -6,6 +6,14 @@ The design of the dashboard is shown in the following picture:
 
 ![Dashboard Design](architecture/docs/dashboard-design.png)
 
+To make any updates, refer to the *dashboard.json* file and run the following command after every update. 
+
+```bash
+aws cloudwatch put-dashboard \
+  --dashboard-name Project2_WebTierMonitoring \
+  --dashboard-body file://dashboard.json
+```
+
 
 ## Golden Signals implementation
 
@@ -40,4 +48,6 @@ The design of the dashboard is shown in the following picture:
 
 
 ## How to use dashboard for troubleshooting
+
+
 
