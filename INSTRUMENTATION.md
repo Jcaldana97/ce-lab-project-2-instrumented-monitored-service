@@ -115,3 +115,27 @@ aws logs put-metric-filter \
 ```
 
 ## Correlation ID implementation
+
+In order to identify each event on the server, a correlation ID generation is implemented. When a requests is received, the corresponding actions are performed, and the results are sent to the logs with a correlation ID as the first attribute. 
+
+To create a correlation ID, the _UUID Generator_ package is imported and used to generate a unique id for each event. The Correlation ID looks as follows: 
+
+```bash
+Correlation ID: c303282d-f2e6-46ca-a04a-35d3d873712d
+```
+
+For each event, the logger stores the relevant data that the endpoint manages and stores the Correlation ID as the first attribute. For example, for the creation of a cart, the logger stores the following information: 
+
+```bash
+    logger.info(
+        "order_created",
+        correlation_id=correlation_id,
+        order_id=order_id,
+        cart_id=cart_id,
+        amount=data.get("amount", 0),
+        items=data.get("items", 0),
+        user_id=data.get("user_id")
+    )
+```
+
+With this implementation, it is easier to filter the logs for a specific event, which is essential in the Root Cause Analysis. 

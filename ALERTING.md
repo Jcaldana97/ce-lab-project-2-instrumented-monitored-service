@@ -223,4 +223,13 @@ aws sns subscribe \
 
 ## Response procedures
 
+The alarm status for each alarm can be seen in the AWS Console under _CloudWatch/Alarms_ section. 
+
+![CloudWatch Alarms](evidence/alert-screenshots/01-alarms.png)
+
+Additionally, the alarms sends an SNS notification, every time an alarm has been triggered. The email contains the details of the alarms, such as the state change, the description of the alarm, the timestamp and the reason of the triggering. The notification looks as follows: 
+
+![SNS Notification](evidence/alert-screenshots/02-sns-notification.png)
+
 ## Runbook for each alert
+

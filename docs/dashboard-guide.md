@@ -9,7 +9,7 @@ This section displays the general information about the server health. The indic
 3. **P95 Latency (ms):** This widget shows the response time of the targets for 95% of the requests. Percentile 95 is used to show the real user experience. 
 4. **Healthy Targets:** This widget displays the total amount of targets that are healthy for the Application Load Balancer 
 
-![Web Tier Health Dashoard](../presentation/screenshots/01-health-dashboard.png)
+![Web Tier Health Dashoard](../evidence/dashboard-screenshots/01-health-dashboard.png)
 
 ---
 
@@ -22,7 +22,7 @@ This section displays the golden signals of the server, which are the basic sign
 3. **Latency - Response Time Percentiles:** This widget contains a line graph with the percentiles P50, P95 and P99 of the response time. This helps to compare the response time for each request. 
 4. **Saturation - Target Health:** This widgets contains a line graph with the count of healthy and unhealthy targets along time. 
 
-![Golden Signals](../presentation/screenshots/02-golden-signals.png)
+![Golden Signals](../evidence/dashboard-screenshots/02-golden-signals.png)
 
 ---
 
@@ -35,7 +35,7 @@ This section shows information about the instance behavior.
 3. **Network In/Out:** This widget contains a line graph that indicate the amount of data that is inbounded and outbounded from the server. 
 4. **Disk Usage:** This widget shows how much disk space has been used in the instance.
 
-![EC2 Resource Utilization](../presentation/screenshots/03-ec2-utilization.png)
+![EC2 Resource Utilization](../evidence/dashboard-screenshots/03-ec2-utilization.png)
 
 ---
 
@@ -50,7 +50,7 @@ This graphic combines the data of the following metrics along time:
 
 The purpose of this combination is to facilitate the Root Cause Analisys by comparing the behavior of these metrics in a specific point in time. 
 
-![Correlation View](../presentation/screenshots/04-correlation-view.png)
+![Correlation View](../evidence/dashboard-screenshots/04-correlation-view.png)
 
 ## Order Service
 
@@ -61,4 +61,4 @@ This section contains information related to the bussiness, i. e., the history a
 3. **Total Carts:** This widget shows the total amount of carts: carts completed, carts abandoned and carts active (carts that were created but they are neither closed nor abandoned)
 4. **CartAbandonmentRate:** This widgets contains a line graph that shows the percentage of abandoned carts compare to the total carts along time.
 
-![Order Service](../presentation/screenshots/05-order-service.png)
+![Order Service](../evidence/dashboard-screenshots/05-order-service.png)
