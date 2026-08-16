@@ -102,7 +102,8 @@ done
 
 Refer to *app/simulation/saturation_sim.py*
 
-- Simulate high CPU Usage 
+
+### Simulate high CPU Usage 
 
 ```bash
 # Install stress-ng

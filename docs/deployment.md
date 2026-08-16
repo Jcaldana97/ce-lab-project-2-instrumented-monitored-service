@@ -127,26 +127,319 @@ nohup python3 server.py > app.log 2>&1 & disown
 
 ## Custom Metrics Instrumentation 
 
-At least 5 custom application metrics
-Published to CloudWatch
-Includes business metrics (not just technical)
-Examples: orders/min, cart abandonment, API latency
+### Application Error Rate
+
+This metric filters the log lines and turns them into a numeric metric: every line in /aws/application/api matching $.level = "error" publishes a 1 to Application/ErrorCount, which the alarm then sums.
+
+```bash
+aws logs put-metric-filter \
+  --log-group-name /aws/application/api \
+  --filter-name ErrorCount \
+  --filter-pattern '{ $.level = "error" }' \
+  --metric-transformations \
+    metricName=ErrorCount,metricNamespace=Application,metricValue=1
+```
+
+### Order Rate
+
+This metric filters the log lines and turns them into a numeric metric: every line in /aws/application/api matching $.event = "order_created" publishes a 1 to Application/OrderCount, which will be displayed in the dashboard. 
+
+```bash
+aws logs put-metric-filter \
+  --log-group-name /aws/application/api \
+  --filter-name OrderCount \
+  --filter-pattern '{ $.event = "order_created" }' \
+  --metric-transformations \
+    metricName=OrderCount,metricNamespace=Application,metricValue=1
+```
+
+### Total Carts
+
+This metric extracts the total amount of carts that have been created. 
+
+```bash
+aws logs put-metric-filter \
+  --log-group-name /aws/application/api \
+  --filter-name "CartTotalCarts" \
+  --filter-pattern '{ $.metric_name = "CartAbandonmentRate" && $.total_carts = * }' \
+  --metric-transformations \
+    metricName=TotalCarts,metricNamespace=OrderService,metricValue='$.total_carts',unit=Count
+```
+
+### Abandoned Carts
+
+This metrics extracts the number of abandoned carts. 
+
+```bash 
+aws logs put-metric-filter \
+  --log-group-name /aws/application/api \
+  --filter-name "CartAbandonedCarts" \
+  --filter-pattern '{ $.metric_name = "CartAbandonmentRate" && $.abandoned_carts = * }' \
+  --metric-transformations \
+    metricName=AbandonedCarts,metricNamespace=OrderService,metricValue='$.abandoned_carts',unit=Count
+```
+
+### Completed Carts
+
+This metric extracts the number of completed carts. 
+
+```bash
+aws logs put-metric-filter \
+  --log-group-name /aws/application/api \
+  --filter-name "CartCompletedCarts" \
+  --filter-pattern '{ $.metric_name = "CartAbandonmentRate" && $.completed_carts = * }' \
+  --metric-transformations \
+    metricName=CompletedCarts,metricNamespace=OrderService,metricValue='$.completed_carts',unit=Count
+```
+
+### Cart Abandonment Rate
+
+This metrics extracts the rate of cart abandonment already calculated in the application. 
+
+```bash
+aws logs put-metric-filter \
+  --log-group-name /aws/application/api \
+  --filter-name "CartAbandonmentRate" \
+  --filter-pattern '{ $.metric_name = "CartAbandonmentRate" && $.abandonment_rate = * }' \
+  --metric-transformations \
+    metricName=CartAbandonmentRate,metricNamespace=OrderService,metricValue='$.abandonment_rate',unit=Percent
+```
 
 ## Monitoring Dashboard
 
-CloudWatch dashboard with Golden Signals
-Request Rate, Error Rate, Latency, Saturation
-Resource utilization (CPU, memory, disk)
-Visual hierarchy (critical metrics prominent)
-Appropriate chart types
+A CloudWatch Dashboard was configured in a hierarchical way as follows: 
+- Critical Health Server Information: Request Count, Error Rate, Target Latency and Healthy Targets
+- Golden Signals: Request Rate, Error Rate, Latency, Saturation
+- Resource Utilization: CPU Usage, Memory Utilization, Network In/Out requests and Disk Space
+- Correlation view that compares P95 Latency, Request Rate, HTTP 5XX Code Responses and CPU Usage
 
-## Alerting System 
+The configuration of the dashboard is defined in the file _config/dashboard.json_ and to create/update the dashboard, the following command must be executed: 
 
-At least 3 CloudWatch alarms
-SNS topic for notifications
-Warning and critical thresholds
-Email alerts configured
-Documented threshold rationale
+```bash
+aws cloudwatch put-dashboard \
+  --dashboard-name Project2-WebTierMonitoring \
+  --dashboard-body file://dashboard.json
+```
+
+## Alerting System
+
+### SNS topic configuration
+
+Create an SNS topic, which is the destination that an alarm publishes to. 
+
+```bash
+TOPIC_ARN=$(aws sns create-topic \
+  --name CloudWatchAlerts \
+  --tags Key=Environment,Value=Production \
+  --query 'TopicArn' \
+  --output text)
+```
+
+**Topic ARN:** arn:aws:sns:us-east-1:829910101871:CloudWatchAlerts
+
+After SNS Topic is created, an email is subscribed to receive notifications. 
+
+```bash
+aws sns subscribe \
+  --topic-arn $TOPIC_ARN \
+  --protocol email \
+  --notification-endpoint julioaldana.deu@gmail.com
+```
+
+### Alarm 1: CPU Utilization 
+
+The first alarm to be wired to the CloudWatch channel is the CPU Utilization. This metric is published by EC2 itself. For this metric, two alarms were created to warn the engineers before the CPU Usage reaches a critical threshold. 
+
+**Warning Alarm**
+
+- Period: 300 seconds (5 minutes)
+- Evaluation periods: 2 (10 minutes total)
+- Threshold: 70%
+- Justification: CPU Usage is high but in a threshold where an action can still be performed.  
+- Comparison: GreaterThan
+
+```bash 
+aws cloudwatch put-metric-alarm \
+  --alarm-name CPU-Warning \
+  --alarm-description "Warning: CPU above 70%" \
+  --metric-name CPUUtilization \
+  --namespace AWS/EC2 \
+  --statistic Average \
+  --period 300 \
+  --threshold 70 \
+  --comparison-operator GreaterThanThreshold \
+  --evaluation-periods 2 \
+  --dimensions Name=InstanceId,Value=$INSTANCE_ID \
+  --alarm-actions $TOPIC_ARN
+```
+
+**Critical Alarm**
+
+- Period: 300 seconds (5 minutes)
+- Evaluation periods: 1
+- Threshold: 90%
+- Justification: CPU Usage is almost reaching 100%, immediate action must be performed.  
+- Comparison: GreaterThan
+
+
+```bash 
+aws cloudwatch put-metric-alarm \
+  --alarm-name CPU-Critical \
+  --alarm-description "CRITICAL: CPU above 90%" \
+  --metric-name CPUUtilization \
+  --namespace AWS/EC2 \
+  --statistic Average \
+  --period 300 \
+  --threshold 90 \
+  --comparison-operator GreaterThanThreshold \
+  --evaluation-periods 1 \
+  --dimensions Name=InstanceId,Value=$INSTANCE_ID \
+  --alarm-actions $TOPIC_ARN
+```
+
+### Alarm 2: Memory Utilization
+
+The memory utilization is also wired to the CloudWatch channel. This metrics comes from CWAgent, so the metrics collection must be added by creating a filter that will count the matching lines in the log group. 
+
+**Warning Alarm**
+
+- Period: 300 seconds (5 minutes)
+- Evaluation periods: 2 (10 minutes total)
+- Threshold: 70%
+- Justification: Memory Usage is high but in a threshold where an action can still be performed.  
+- Comparison: GreaterThan
+
+```bash 
+aws cloudwatch put-metric-alarm \
+  --alarm-name MemoryUsage-Warning \
+  --alarm-description "Warning: Memory above 70%" \
+  --metric-name mem_used_percent \
+  --namespace CWAgent \
+  --statistic Average \
+  --period 300 \
+  --threshold 70 \
+  --comparison-operator GreaterThanThreshold \
+  --evaluation-periods 2 \
+  --dimensions Name=InstanceId,Value=$INSTANCE_ID \
+  --alarm-actions $TOPIC_ARN
+```
+
+**Critical Alarm**
+
+- Period: 300 seconds (5 minutes)
+- Evaluation periods: 1
+- Threshold: 90%
+- Justification: Memory Usage is almost reaching 100%, immediate action must be performed.  
+- Comparison: GreaterThan
+
+
+```bash 
+aws cloudwatch put-metric-alarm \
+  --alarm-name MemoryUsage-Critical \
+  --alarm-description "Critical: Memory above 90%" \
+  --metric-name mem_used_percent \
+  --namespace CWAgent \
+  --statistic Average \
+  --period 300 \
+  --threshold 90 \
+  --comparison-operator GreaterThanThreshold \
+  --evaluation-periods 1 \
+  --dimensions Name=InstanceId,Value=$INSTANCE_ID \
+  --alarm-actions $TOPIC_ARN
+```
+
+### Alarm 3: Disk Space
+
+**Warning Alarm**
+
+- Period: 300 seconds (5 minutes)
+- Evaluation periods: 2 (10 minutes total)
+- Threshold: 70%
+- Justification: Disk Space is running out but in a threshold where an action can still be performed.  
+- Comparison: GreaterThan
+
+```bash 
+aws cloudwatch put-metric-alarm \
+  --alarm-name DiskSpace-Warning \
+  --alarm-description "Warning: Disk Space below 30%" \
+  --metric-name disk_used_percent \
+  --namespace CWAgent \
+  --statistic Average \
+  --period 300 \
+  --threshold 70 \
+  --comparison-operator GreaterThanThreshold \
+  --evaluation-periods 2 \
+  --dimensions Name=InstanceId,Value=$INSTANCE_ID Name=path,Value=/ Name=device,Value="nvme0n1p1" Name=fstype,Value="xfs" \
+  --alarm-actions $TOPIC_ARN
+```
+
+**Critical Alarm**
+
+- Period: 300 seconds (5 minutes)
+- Evaluation periods: 1
+- Threshold: 90%
+- Justification: Disk Space is almost full, immediate action must be performed.  
+- Comparison: GreaterThan
+
+
+```bash 
+aws cloudwatch put-metric-alarm \
+  --alarm-name DiskSpace-Critical \
+  --alarm-description "Critical: Disk Space below 10%" \
+  --metric-name disk_used_percent \
+  --namespace CWAgent \
+  --statistic Average \
+  --period 300 \
+  --threshold 90 \
+  --comparison-operator GreaterThanThreshold \
+  --evaluation-periods 1 \
+  --dimensions Name=InstanceId,Value=$INSTANCE_ID Name=path,Value=/ Name=device,Value="nvme0n1p1" Name=fstype,Value="xfs" \
+  --alarm-actions $TOPIC_ARN
+```
+
+### Alarm 4: Application Error Rate Alarm 
+
+Create the alarm with the following parameters: 
+
+- Period: 300 seconds (5 minutes)
+- Evaluation periods: 1
+- Threshold: 10
+- Justification: Having an error rate of 2 errors per minute is sufficient to consider that there is an issue.  
+- Comparison: GreaterThan
+
+```bash
+aws cloudwatch put-metric-alarm \
+  --alarm-name HighErrorRate \
+  --alarm-description "Alert when error rate exceeds 10 per 5 minutes" \
+  --metric-name ErrorCount \
+  --namespace Application \
+  --statistic Sum \
+  --period 300 \
+  --threshold 10 \
+  --comparison-operator GreaterThanThreshold \
+  --evaluation-periods 1 \
+  --alarm-actions $TOPIC_ARN \
+  --treat-missing-data notBreaching
+```
+
+## Alarm 5: Application Load Balancer Response Time Alert
+
+This alarm is triggered when the Load Balancer response exceeds 500 ms.
+
+```bash
+aws cloudwatch put-metric-alarm \
+  --alarm-name HighResponseTime \
+  --alarm-description "Alert when P95 latency exceeds 500ms" \
+  --metric-name TargetResponseTime \
+  --namespace AWS/ApplicationELB \
+  --extended-statistic p95 \
+  --period 300 \
+  --threshold 0.5 \
+  --comparison-operator GreaterThanThreshold \
+  --evaluation-periods 2 \
+  --dimensions Name=LoadBalancer,Value=$LB_DIMENSION \
+  --alarm-actions $TOPIC_ARN
+```
 
 ## Incident Response Simulation 
 
