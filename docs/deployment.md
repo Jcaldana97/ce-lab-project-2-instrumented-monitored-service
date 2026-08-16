@@ -455,7 +455,7 @@ The script *app/simulation/saturation_sim.py* sends and increase the number of r
 
 **Golden Signals:** This section of the dasboard shows the behavior of the most relevant signals, such as the latency, the error responses and the traffic that has increased.
 
-![Golden Signals](../evidence/incident-screenshots/01-golden-signals.png) 
+![Golden Signals](../evidence/incident-screenshots/02-golden-signals.png) 
 
 **EC2 Resource Utilization:** In this section it is possible to see the increasing of the CPU Usage, which is the potential root cause of the problem.
 

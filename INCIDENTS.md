@@ -47,7 +47,7 @@
 
 ![Health Dashboard](evidence/incident-screenshots/01-health-dashboard.png)
 
-![Golden Signals](evidence/incident-screenshots/01-golden-signals.png) 
+![Golden Signals](evidence/incident-screenshots/02-golden-signals.png) 
 
 ### Conclusion
 
