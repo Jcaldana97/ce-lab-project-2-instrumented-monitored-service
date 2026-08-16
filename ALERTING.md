@@ -324,7 +324,7 @@ For each alarm, these are possible responses:
 - [ ] Monitor the error rate after taking corrective action.
 - [ ] Escalate immediately if the application remains unavailable or customer impact is significant.
 
-5. **High Response Time Runbook**
+5. **High Response Time**
 
 - [ ] Identify the affected application/service or endpoint.
 - [ ] Check when the latency increase started.
