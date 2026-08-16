@@ -4,7 +4,7 @@
 
 The design of the dashboard is shown in the following picture: 
 
-![Dashboard Design](architecture/docs/dashboard-design.png)
+![Dashboard Design](docs/architecture/dashboard-design.png)
 
 To make any updates, refer to the *dashboard.json* file and run the following command after every update. 
 
