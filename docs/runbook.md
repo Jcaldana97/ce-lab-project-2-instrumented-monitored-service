@@ -110,10 +110,10 @@ Refer to *app/simulation/saturation_sim.py*
 sudo dnf install -y stress-ng
 
 # Trigger the 70% warning alarm, but stay below 90%
-stress-ng --cpu 1 --cpu-load 75 --timeout 5m
+stress-ng --cpu 4 --cpu-load 75 --timeout 5m
 
 # Push CPU above 90%
-stress-ng --cpu 1 --cpu-load 95 --timeout 5m
+stress-ng --cpu 4 --cpu-load 95 --timeout 5m
 ```
 
 

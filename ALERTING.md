@@ -231,6 +231,10 @@ Additionally, the alarms sends an SNS notification, every time an alarm has been
 
 ![SNS Notification](evidence/alert-screenshots/02-sns-notification.png)
 
+When an alert reaches the threshold, the state of the alarm changes to _In alarm_, as shown in the following picture: 
+
+![In Alarm State](evidence/alert-screenshots/03-alerts-in-alarm-state.png)
+
 For each alarm, these are possible responses: 
 
 1. **CPU Warning / CPU Critical**
