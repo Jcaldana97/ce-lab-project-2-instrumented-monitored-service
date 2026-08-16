@@ -422,7 +422,7 @@ aws cloudwatch put-metric-alarm \
   --treat-missing-data notBreaching
 ```
 
-## Alarm 5: Application Load Balancer Response Time Alert
+### Alarm 5: Application Load Balancer Response Time Alert
 
 This alarm is triggered when the Load Balancer response exceeds 500 ms.
 
@@ -443,8 +443,51 @@ aws cloudwatch put-metric-alarm \
 
 ## Incident Response Simulation 
 
-Inject a failure (high latency, errors, resource exhaustion)
-Use monitoring to diagnose
-Write incident summary
-Document findings with screenshots
-Propose fixes
+### Inject a failure 
+
+The script *app/simulation/saturation_sim.py* sends and increase the number of request from 5 to 50, and simulates error responses on the server. In parallel, the command ```bash stress-ng --cpu 4 --cpu-load 70 --timeout 7m```is used to stress the server to simulate an increase in the CPU utilization.
+
+### Use monitoring to diagnose
+
+**Health Dashboard:** This section of the dashboard shows an increase on the request rate, as well as a high error rate when the request rate increase. 
+
+![Health Dashboard](../evidence/incident-screenshots/01-health-dashboard.png)
+
+**Golden Signals:** This section of the dasboard shows the behavior of the most relevant signals, such as the latency, the error responses and the traffic that has increased.
+
+![Golden Signals](../evidence/incident-screenshots/01-golden-signals.png) 
+
+**EC2 Resource Utilization:** In this section it is possible to see the increasing of the CPU Usage, which is the potential root cause of the problem.
+
+![CPU Usage](../evidence/incident-screenshots/03-cpu-usage.png)
+
+**Correlation View:** With this widget, it is more visible the relationship between the symptoms of the server and the behavior of the resource. The anomalies ocurr simultaneously, and this can be seen really easy with this view.
+
+![Correlation View](../evidence/incident-screenshots/04-correlation-view.png)
+
+### Incident summary
+
+**Incident:** API latency increased from 200ms (P95) to 2,000ms (P95)  
+**Impact:** 2,500 users experienced slow page loads, 35% error rate  
+**Duration:** 60 minutes (17:00-18:00 UTC, Aug 14, 2024)  
+**Root Cause:**  Unexpected traffic/application workload 
+**Status:** Resolved
+
+### Possible fixes
+
+**Immediate**
+
+- Stop non-critical batch jobs or scheduled workloads.
+- Increase the number of EC2 instances in the ALB
+- Restart the application can temporary restore the performance. 
+ 
+**Short-term**
+
+- Implement auto-scaling for ALB
+- Optimize the application to find CPU-intensive code.
+- Size the instance based on observed CPU Usage
+ 
+**Long-term**
+
+- Perform load tests to determine the maximum sustainable request rate
+- Optimize inefficient algorithms, loops, serialization, request processing, or background jobs

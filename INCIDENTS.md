@@ -2,10 +2,10 @@
 
 ## Incident summary
 
-**Incident:** API latency increased from 300ms (P95) to 5,000ms (P95)  
-**Impact:** 5,000 users experienced slow page loads, 5% error rate  
-**Duration:** 60 minutes (14:00-15:00 UTC, Jan 20, 2024)  
-**Root Cause:** Database connection pool exhaustion  
+**Incident:** API latency increased from 200ms (P95) to 2,000ms (P95)  
+**Impact:** 2,500 users experienced slow page loads, 35% error rate  
+**Duration:** 60 minutes (17:00-18:00 UTC, Aug 14, 2024)  
+**Root Cause:**  Unexpected traffic/application workload 
 **Status:** Resolved
 
 ## Timeline
@@ -13,13 +13,13 @@
 | Time (UTC) | Event |
 |------------|-------|
 | 14:00 | CloudWatch alarm triggered: High latency detected |
-| 14:05 | On-call engineer paged |
+| 14:05 | CloudWatch alarm triggered: High Error Rate detected |
 | 14:10 | Investigation started using RED method |
 | 14:15 | Confirmed elevated error rate and latency |
 | 14:20 | USE method applied to resources |
-| 14:25 | Identified DB connection pool at 100% utilization |
-| 14:30 | ROOT CAUSE: Connection pool exhausted (max 20) |
-| 14:35 | Immediate fix: Increased pool size to 50 |
+| 14:25 | Identified EC2 CPU Usage at 96% |
+| 14:30 | ROOT CAUSE: Unexpected traffic/application workload |
+| 14:35 | Immediate fix: Increase the number of EC2 instances in the ALB |
 | 14:40 | Service began recovering |
 | 14:50 | Latency returned to normal |
 | 15:00 | Incident closed |
@@ -29,75 +29,77 @@
 
 ### Rate (Traffic)
 
-- Normal: 500 req/min
-- Incident: 1,500 req/min
-- **Finding: 3x traffic increase**
+- Normal: 25 req/min
+- Incident: 632 req/min - See Health Dashboard Error Rate
+- **Finding: 10x traffic increase**
  
 ### Errors
 
 - Normal: 0.1%
-- Incident: 5.0%
-- **Finding: 50x error increase**
- 
+- Incident: 35.0% during the incident - See Golden Signals Error Rate
+- **Finding: 70x error increase**
+
 ### Duration (Latency)
 
-- Normal P95: 300ms
-- Incident P95: 5,000ms
-- **Finding: 16x latency increase**
- 
+- Normal P95: 200ms
+- Incident P95: 2,000ms
+- **Finding: 10x latency increase**
+
+![Health Dashboard](evidence/incident-screenshots/01-health-dashboard.png)
+
+![Golden Signals](evidence/incident-screenshots/01-golden-signals.png) 
+
 ### Conclusion
 
 All three RED signals elevated. Significant performance degradation.
-Primary symptom: High latency (16x increase)
+Primary symptom: High latency (10x increase)
 
 ## USE Method Summary
  
-### CPU
-- ✅ Utilization: 45% (normal)
-- ✅ Saturation: Normal
-- ✅ Errors: None
- 
 ### Memory
-- ✅ Utilization: 70% (normal)
+- ✅ Utilization: 25% (normal)
 - ✅ Saturation: No swapping
 - ✅ Errors: None
- 
-### Database Connection Pool
-- 🔴 Utilization: 100% (maxed out!)
-- 🔴 Saturation: Requests queuing
+
+### CPU
+- 🔴 Utilization: 95% (abnormal)
+- 🔴 Saturation: Abormal
 - 🔴 Errors: Timeout errors
+
+![CPU Usage](evidence/incident-screenshots/03-cpu-usage.png)
  
-## Conclusion
-**ROOT CAUSE IDENTIFIED: Database connection pool exhaustion**
+### Conclusion
+
+**ROOT CAUSE IDENTIFIED: Ec2 instance undersized**
+
+![Correlation View](evidence/incident-screenshots/04-correlation-view.png)
 
 
 ## Root causes identified
 
-- **Problem:** Database connection pool exhausted
-- 
--
+- **Problem:** The EC2 instance is undersized for the workload, or an unexpected traffic/application workload spike is exhausting available CPU
 
 
 ## Fixes applied
 
 ### Immediate (Week 1)
-- [x] Increase connection pool to 50 (DONE)
-- [ ] Add CloudWatch alarm for connection pool > 80% (Owner: Sarah, Due: Jan 25)
-- [ ] Document connection pool sizing (Owner: Mike, Due: Jan 22)
+- [x] Stop non-critical batch jobs or scheduled workloads.
+- [x] Increase the number of EC2 instances in the ALB
+- [x] Restart the application can temporary restore the performance. 
  
 ### Short-term (Month 1)
-- [ ] Implement auto-scaling for connection pool (Owner: Mike, Due: Feb 5)
-- [ ] Load test with 5x normal traffic (Owner: Team, Due: Feb 10)
-- [ ] Create runbook for connection pool issues (Owner: Alex, Due: Jan 30)
+- [ ] Implement auto-scaling for ALB
+- [ ] Optimize the application to find CPU-intensive code.
+- [ ] Size the instance based on observed CPU Usage
  
 ### Long-term (Quarter 1)
-- [ ] Establish engineering review process for marketing campaigns (Owner: Manager, Due: Feb 15)
-- [ ] Implement capacity planning framework (Owner: Team, Due: Mar 1)
-- [ ] Add auto-scaling dashboard widget (Owner: Sarah, Due: Feb 5)
+- [ ] Perform load tests to determine the maximum sustainable request rate
+- [ ] Optimize inefficient algorithms, loops, serialization, request processing, or background jobs
 
 ## Lessons learned
 
 ### What Went Well ✅
+
 - Alerts triggered immediately (within 1 minute)
 - On-call engineer responded quickly (5 minutes)
 - Systematic RED/USE methodology led to root cause
@@ -105,6 +107,7 @@ Primary symptom: High latency (16x increase)
 - Mitigation applied quickly (10 minutes to identify, 5 to fix)
  
 ### What Went Wrong ❌
+
 - No capacity planning for marketing campaigns
 - Connection pool not monitored (no alerts)
 - No auto-scaling configured
