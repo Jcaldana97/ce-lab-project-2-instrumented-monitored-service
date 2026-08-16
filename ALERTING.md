@@ -231,5 +231,105 @@ Additionally, the alarms sends an SNS notification, every time an alarm has been
 
 ![SNS Notification](evidence/alert-screenshots/02-sns-notification.png)
 
+For each alarm, these are possible responses: 
+
+1. **CPU Warning / CPU Critical**
+  - Check which EC2 instance/service is affected and how long CPU has been high.
+  - Look at CloudWatch metrics for CPU, request rate, network traffic, and application activity.
+  - Identify the processes consuming CPU.
+  - Check whether the increase is expected, such as a traffic spike or scheduled job.
+  - If it is unexpected, investigate the application/process causing the load.
+  - If the workload is genuinely too large for the instance, consider scaling horizontally or vertically.
+  - Verify CPU usage returns to an acceptable level after remediation.
+
+2. **Memory Usage Warning / Memory Usage Critical** 
+  - Identify the affected instance/container and check memory and application metrics.
+  - Determine whether a particular process is consuming excessive memory.
+  - Look for memory leaks, increased traffic, or a recent application deployment.
+  - If necessary, restart the affected service as a short-term mitigation.
+  - Consider increasing instance/container memory or scaling out if the workload has legitimately increased.
+  - Investigate the root cause so that simply restarting the service doesn't become the permanent solution.
+
+3. **Disk Space Warning / Disk Space Critical**
+  - Identify which instance and filesystem/volume is filling up.
+  - Check what is consuming the disk-logs, temporary files, application data, Docker images, etc.
+  - Remove or archive unnecessary files safely.
+  - Check whether log rotation and retention are working correctly.
+  - If the data is legitimate and expected to grow, increase the EBS volume and/or implement a better storage strategy.
+  - Verify sufficient free space remains afterward.
+
+4. **Application Error Rate**
+  - Treat this as potentially high priority, especially if customer traffic is affected.
+  - Check application logs and CloudWatch metrics to determine the type and source of errors.
+  - Check recent deployments, configuration changes, dependency failures, database issues, and infrastructure health.
+  - Determine whether the errors affect all users or only a particular endpoint/service.
+  - If a recent deployment caused the problem, roll back if appropriate.
+  - Continue monitoring until the error rate returns to normal.
+
+5. **ALB Response Time Alert** 
+  - Check whether the latency increase is isolated to one endpoint/service or affects the whole application.
+  - Compare latency with CPU, memory, database, network, and request-rate metrics.
+  - Examine application logs and traces if available.
+  - Look for slow database queries, external API delays, resource exhaustion, increased traffic, or a recent deployment.
+  - Scale the affected service if the problem is capacity-related.
+  - Optimize or fix the underlying bottleneck if it is application-related.
+  - Verify latency returns to the normal range.
+
 ## Runbook for each alert
 
+1. **High CPU Utilization** 
+[] Identify the affected EC2 instance/service.
+[] Check CPU utilization in CloudWatch and determine how long it has been elevated.
+[] Check whether traffic/request volume has increased.
+[] Identify processes consuming excessive CPU.
+[] If caused by expected traffic, scale the service/instance if necessary.
+[] If caused by a runaway process, restart the affected service if safe.
+[] Monitor CPU until it returns to normal.
+[] Escalate if CPU remains high or the application is unavailable.
+
+2. **High Memory Utilization**
+[] Identify the affected EC2 instance/container.
+[] Check memory utilization and available memory.
+[] Identify processes consuming the most memory.
+[] Check for recent deployments or configuration changes.
+[] If memory usage is caused by a temporary issue, restart the affected service if appropriate.
+[] If the workload legitimately requires more memory, scale the instance/container.
+[] Monitor memory usage after remediation.
+[] Escalate if memory continues to increase or the application becomes unstable.
+
+3. **Low Disk Space**
+[] Identify the affected instance and filesystem.
+[] Check disk usage and identify which directories/files are consuming space.
+[] Check application and system logs.
+[] Check whether log rotation is working correctly.
+[] Safely remove unnecessary temporary files or old logs according to the retention policy.
+[] If appropriate, archive data to durable storage such as S3.
+[] If additional capacity is required, increase the EBS volume.
+[] Verify sufficient free space is available.
+[] Confirm the CloudWatch alarm returns to OK.
+[] Escalate if disk space continues to decrease or cannot safely be freed.
+
+4. **High Application Error Rate**
+[] Check the error-rate CloudWatch metric and determine when the problem started.
+[] Check application logs for the specific errors.
+[] Check whether there was a recent deployment or configuration change.
+[] Check dependent services such as databases, APIs, queues, and other AWS services.
+[] Determine whether the problem affects all users or a specific endpoint.
+[] If a recent deployment caused the issue, consider rolling it back.
+[] If the service is overloaded, scale it if appropriate.
+[] Monitor the error rate after taking corrective action.
+[] Escalate immediately if the application remains unavailable or customer impact is significant.
+
+5. **High Response Time Runbook**
+[] Identify the affected application/service or endpoint.
+[] Check when the latency increase started.
+[] Check request volume and traffic patterns.
+[] Compare latency with CPU, memory, disk, and network metrics.
+[] Check application logs and traces for slow operations.
+[] Check database performance and slow queries.
+[] Check external API/dependency latency.
+[] Check for recent deployments or configuration changes.
+[] Scale the affected service if the problem is capacity-related.
+[] Roll back a recent change if it is identified as the likely cause.
+[] Monitor response time until it returns to the normal range.
+[] Escalate if latency remains high or customers are experiencing significant impact.
