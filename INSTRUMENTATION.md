@@ -44,7 +44,7 @@ aws logs put-metric-filter \
     metricName=OrderCount,metricNamespace=Application,metricValue=1
 ```
 
-## Custom metrics - Bussiness
+## Custom metrics - Business
 
 The server was extended for the user to create carts for their purchases. The interaction of the user with the application is logged, the information may look as follows: 
 
@@ -60,7 +60,7 @@ The server was extended for the user to create carts for their purchases. The in
 }
 ```
 
-This information helps to understand the user experience in terms of bussiness and detect possible pitfalls for them with the application. 
+This information helps to understand the user experience in terms of business and detect possible pitfalls for them with the application. 
 
 ### Total Carts
 

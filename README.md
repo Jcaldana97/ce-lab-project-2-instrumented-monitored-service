@@ -39,7 +39,7 @@ For each event, the logger stores the relevant data that the endpoint manages an
 - **Application Error Rate:** This metric filters the log lines and turns them into a numeric metric: every line in /aws/application/api matching $.level = "error" publishes a 1 to Application/ErrorCount, which the alarm then sums.
 - **Order Rate:** This metric filters the log lines and turns them into a numeric metric: every line in /aws/application/api matching $.event = "order_created" publishes a 1 to Application/OrderCount, which will be displayed in the dashboard. 
 
-### Custom metrics - Bussiness
+### Custom metrics - Business
 
 - **Total Carts:** This metric extracts the total amount of carts that have been created. 
 - **Abandoned Carts:** This metrics extracts the number of abandoned carts. 

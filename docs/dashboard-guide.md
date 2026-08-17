@@ -54,7 +54,7 @@ The purpose of this combination is to facilitate the Root Cause Analisys by comp
 
 ## Order Service
 
-This section contains information related to the bussiness, i. e., the history about the user experience with the web server. 
+This section contains information related to the business, i. e., the history about the user experience with the web server. 
 
 1. **Complete Carts:** This widgets shows the total amount of carts that were completed (purchase closed).
 2. **Abandoned Carts:** This widget shows the total amount of abandoned carts, i. e., carts that were created but not completed. 

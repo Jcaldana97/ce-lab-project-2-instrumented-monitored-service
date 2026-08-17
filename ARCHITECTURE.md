@@ -29,7 +29,7 @@ This component contains the alarms that are triggered whenever a certain metric 
 
 The purpose of this component is to monitor in real-time the behavior of the system. It helps to further perform the root cause analysis by displaying relevant information such as Request Rate, Error Rate, Latency, Healty Targets and Resource metrics. Observation of the information through time is useful to correlate an issue with its possible cause. A correlation view is also added to the dashboard to facilitate the comparison between most relevant metrics that may affect the functionality of the system. 
 
-Additionally, the dashboard displays bussiness metrics, which purpose is to show the user experience with the server. 
+Additionally, the dashboard displays business metrics, which purpose is to show the user experience with the server. 
 
 ### Application Load Balancer 
 
